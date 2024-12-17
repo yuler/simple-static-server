@@ -13,3 +13,10 @@ A simple server for serving static files that allow you to upload files.
 ```bash
 pnpm install
 ```
+
+## Run
+
+```bash
+ln -s /Volumes/Shared/ "$PWD/static"
+PORT=4000 pnpm run dev
+```

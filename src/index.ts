@@ -60,8 +60,9 @@ app.get('/', (c) => {
 })
 
 // Static file serving
+// refs: https://github.com/honojs/hono/blob/main/packages/node-server/src/serve-static.ts
 app.use('/file/*',  serveStatic({
-  root: './static',
+  root: staticDir,
   rewriteRequestPath: (path) => {
     return path.replace(/^\/file/, '')
   },

@@ -17,5 +17,4 @@ dist
 .env.*.local
 
 # static
-static/*
-!static/.gitkeep
+static
