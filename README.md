@@ -12,11 +12,19 @@ A simple server for serving static files that allow you to upload files.
 
 ```bash
 pnpm install
+pnpm run dev
 ```
 
-## Run
+Note: If you want specify the static directory, you can symlink the directory.
 
 ```bash
 ln -s /Volumes/Shared/ "$PWD/static"
-PORT=4000 pnpm run dev
+```
+
+## Run in Docker
+
+```bash
+docker build --no-cache -t simple-static-server .
+docker run --rm -it -p 4000:3000 -v /Volumes/Shared:/app/static simple-static-server
+docker run -d --name simple-static-server --restart always -p 4000:3000 -v /Volumes/Shared:/app/static simple-static-server
 ```

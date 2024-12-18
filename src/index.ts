@@ -78,7 +78,7 @@ app.use('/file/*',  serveStatic({
 app.post('/upload', async (c) => {
   const contentType = c.req.header('Content-Type') || ''
   
-  let buffer: ArrayBuffer
+  let buffer: Buffer
   let filename: string
   let extension: string | undefined
   
@@ -91,7 +91,7 @@ app.post('/upload', async (c) => {
       return c.json({ error: 'No file provided' }, 400)
     }
     
-    buffer = await file.arrayBuffer()
+    buffer = Buffer.from(await file.arrayBuffer())
     extension = file.name.split('.').pop()!
   }
   // JSON
