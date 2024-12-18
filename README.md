@@ -25,6 +25,8 @@ ln -s /Volumes/Shared/ "$PWD/static"
 
 ```bash
 docker build --no-cache -t simple-static-server .
+# For temporary
 docker run --rm -it -p 4000:3000 -v /Volumes/Shared:/app/static simple-static-server
+# For production
 docker run -d --name simple-static-server --restart always -p 4000:3000 -v /Volumes/Shared:/app/static simple-static-server
 ```
