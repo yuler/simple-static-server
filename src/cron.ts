@@ -14,7 +14,7 @@ export function startCronJobs() {
     CRON_TIME,
     async () => {
       console.log('Job: create date format folder started')
-      const folderName = getTodayFormat()
+      const folderName = path.join(staticDir, getTodayFormat())
       await ensureDirExists(folderName)
       console.log(`Job: create date format folder: ${folderName}`)
     },
