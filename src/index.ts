@@ -1,18 +1,21 @@
 import process from 'node:process'
 import fs from 'node:fs'
 import path from 'node:path'
-import crypto from 'node:crypto'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import { marked } from 'marked'
 import { fileTypeFromBuffer } from 'file-type'
+import { getTodayFormat, getUUID, ensureDirExists } from './utils.js'
+import { staticDir } from './constants.js'
+import { startCronJobs } from './cron.js'
 
-const staticDir = './static'
 // Create static directory if it doesn't exist
 if (!fs.existsSync(staticDir)) {
   fs.mkdirSync(staticDir, { recursive: true })
 }
+
+startCronJobs()
 
 const app = new Hono()
 
@@ -191,23 +194,3 @@ serve({
   fetch: app.fetch,
   port
 })
-
-
-// YYYY-MM-DD
-function getTodayFormat(): string {
-  const date = new Date()
-  const year = date.getFullYear()
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function getUUID(): string {
-  return crypto.randomUUID()
-}
-
-async function ensureDirExists(dir: string) {
-  if (!fs.existsSync(dir)) {
-    await fs.promises.mkdir(dir, { recursive: true })
-  }
-}
