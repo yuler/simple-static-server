@@ -15,6 +15,11 @@ export function getTodayFormat(): string {
   return formatDate(date)
 }
 
+export function getTomorrowFormat(): string {
+  const date = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  return formatDate(date)
+}
+
 export function getUUID(): string {
   return crypto.randomUUID()
 }
@@ -40,16 +45,16 @@ export function isDateFolderPassedOneMonth(folder: string) {
 // return file count and size
 export async function statsFolder(folderPath: string): Promise<{ count: number, size: string }> {
   const realPath = await fs.realpath(folderPath)
-  
+
   async function calculateStats(dirPath: string): Promise<{ size: number, count: number }> {
     let totalSize = 0
     let fileCount = 0
     const items = await fs.readdir(dirPath)
-    
+
     for (const item of items) {
       const itemPath = path.join(dirPath, item)
       const stats = await fs.stat(itemPath)
-      
+
       if (stats.isDirectory()) {
         const subStats = await calculateStats(itemPath)
         totalSize += subStats.size
@@ -59,7 +64,7 @@ export async function statsFolder(folderPath: string): Promise<{ count: number, 
         fileCount += 1
       }
     }
-    
+
     return { size: totalSize, count: fileCount }
   }
 
@@ -67,7 +72,7 @@ export async function statsFolder(folderPath: string): Promise<{ count: number, 
   const megabytes = (stats.size / (1024 * 1024)).toFixed(2)
   return {
     count: stats.count,
-    size: `${megabytes}MB`
+    size: `${megabytes}MB`,
   }
 }
 

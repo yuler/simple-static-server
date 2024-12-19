@@ -25,9 +25,11 @@ ln -s /Volumes/Shared/ "$PWD/static"
 ## Run in Docker
 
 ```bash
+# Copy .env & change the value
+cp .env.example .env
 docker build --no-cache -t simple-static-server .
 # For temporary
-docker run --rm -it -p 4000:3000 -e BASIC_AUTH_USERNAME=admin -e BASIC_AUTH_PASSWORD=password -v /Volumes/Shared:/app/static simple-static-server
+docker run --rm -it -p 4000:3000 --env-file .env -v /Volumes/Shared:/app/static simple-static-server
 # For production
-docker run -d --name simple-static-server --restart always -p 4000:3000 -e BASIC_AUTH_USERNAME=admin -e BASIC_AUTH_PASSWORD=password -v /Volumes/Shared:/app/static simple-static-server
+docker run -d --name simple-static-server --restart always -p 4000:3000 --env-file .env -v /Volumes/Shared:/app/static simple-static-server
 ```

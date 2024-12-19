@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { CronJob } from 'cron'
-import { ensureDirExists, formatDate, getTodayFormat, isDateFolderPassedOneMonth } from './utils.js'
+import { ensureDirExists, getTomorrowFormat, isDateFolderPassedOneMonth } from './utils.js'
 import { staticDir } from './constants.js'
 
 const CRON_TIME = '0 0 * * *'
@@ -14,7 +14,7 @@ export function startCronJobs() {
     CRON_TIME,
     async () => {
       console.log('Job: create date format folder started')
-      const folderName = path.join(staticDir, getTodayFormat())
+      const folderName = path.join(staticDir, getTomorrowFormat())
       await ensureDirExists(folderName)
       console.log(`Job: create date format folder: ${folderName}`)
     },
