@@ -7,6 +7,7 @@ A simple server for serving static files that allow you to upload files.
 - Basic auth for upload file
 - Serve/download files
 - A cron job to create/delete(if passed one month) folders every day at 00:00
+- You can quick check the stats of the folders by `/stats`
 
 ## Development
 
@@ -30,8 +31,3 @@ docker run --rm -it -p 4000:3000 -e BASIC_AUTH_USERNAME=admin -e BASIC_AUTH_PASS
 # For production
 docker run -d --name simple-static-server --restart always -p 4000:3000 -e BASIC_AUTH_USERNAME=admin -e BASIC_AUTH_PASSWORD=password -v /Volumes/Shared:/app/static simple-static-server
 ```
-
-## TODO
-
-- [ ] Add schedule to delete old files
-- [ ] Add summary statistics information

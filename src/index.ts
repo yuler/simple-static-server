@@ -3,10 +3,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
+import { basicAuth } from 'hono/basic-auth'
 import { Hono } from 'hono'
 import { marked } from 'marked'
 import { fileTypeFromBuffer } from 'file-type'
-import { getTodayFormat, getUUID, ensureDirExists } from './utils.js'
+import { getTodayFormat, getUUID, ensureDirExists, getSubFolders, statsFolder } from './utils.js'
 import { staticDir } from './constants.js'
 import { startCronJobs } from './cron.js'
 
@@ -19,36 +20,15 @@ startCronJobs()
 
 const app = new Hono()
 
-// Add auth middleware specifically for /upload endpoint
-app.use('/upload', async (c, next) => {
-  const USERNAME = process.env.BASIC_AUTH_USERNAME || 'admin'
-  const PASSWORD = process.env.BASIC_AUTH_PASSWORD || 'password'
-  const auth = c.req.header('Authorization')
-
-  if (!auth || !auth.startsWith('Basic ')) {
-    return new Response('Unauthorized', {
-      status: 401,
-      headers: {
-        'WWW-Authenticate': 'Basic realm="Protected Area"'
-      }
-    })
-  }
-
-  const [username, password] = Buffer.from(auth.split(' ')[1], 'base64')
-    .toString()
-    .split(':')
-
-  if (username !== USERNAME || password !== PASSWORD) {
-    return new Response('Unauthorized', {
-      status: 401,
-      headers: {
-        'WWW-Authenticate': 'Basic realm="Protected Area"'
-      }
-    })
-  }
-
-  return next()
+const basicAuthMiddleware = basicAuth({
+  username: process.env.BASIC_AUTH_USERNAME || 'admin',
+  password: process.env.BASIC_AUTH_PASSWORD || 'password',
 })
+
+// Add auth middleware for some endpoints
+app.use('/', basicAuthMiddleware)
+app.use('/upload', basicAuthMiddleware)
+app.use('/stats', basicAuthMiddleware)
 
 // Add GitHub markdown CSS
 const githubMarkdownCSS = `
@@ -91,6 +71,25 @@ app.get('/', (c) => {
   `
 
   return c.html(html)
+})
+
+app.get('/stats', async (c) => {
+  // get all folders in static
+  const folders = await getSubFolders(staticDir)
+
+  // Find the longest folder name for padding
+  let results = []
+
+  for (const folder of folders) {
+    const { count, size } = await statsFolder(path.join(staticDir, folder))
+    results.push({ folder, count, size })
+  }
+
+
+  const maxCountLength = Math.max(...results.map(r => String(r.count).length))
+  const maxSizeLength = Math.max(...results.map(r => String(r.size).length))
+  const text = results.map(item => `folder: ${item.folder}, count: ${String(item.count).padStart(maxCountLength, ' ')}, size: ${String(item.size).padStart(maxSizeLength, ' ')}`).join('\n')
+  return c.text(text)
 })
 
 // Static file serving
