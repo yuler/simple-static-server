@@ -16,6 +16,37 @@ if (!fs.existsSync(staticDir)) {
 
 const app = new Hono()
 
+// Add auth middleware specifically for /upload endpoint
+app.use('/upload', async (c, next) => {
+  const USERNAME = process.env.BASIC_AUTH_USERNAME || 'admin'
+  const PASSWORD = process.env.BASIC_AUTH_PASSWORD || 'password'
+  const auth = c.req.header('Authorization')
+
+  if (!auth || !auth.startsWith('Basic ')) {
+    return new Response('Unauthorized', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="Protected Area"'
+      }
+    })
+  }
+
+  const [username, password] = Buffer.from(auth.split(' ')[1], 'base64')
+    .toString()
+    .split(':')
+
+  if (username !== USERNAME || password !== PASSWORD) {
+    return new Response('Unauthorized', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="Protected Area"'
+      }
+    })
+  }
+
+  return next()
+})
+
 // Add GitHub markdown CSS
 const githubMarkdownCSS = `
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">
@@ -126,9 +157,8 @@ app.post('/upload', async (c) => {
   fs.writeFileSync(filepath, Buffer.from(buffer))
 
   return c.json({ 
-    success: true, 
     filename,
-    url: `/file/${filename}`
+    url: `/file/${getTodayFormat()}/${filename}`
   })
 })
 

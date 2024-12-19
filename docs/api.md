@@ -21,19 +21,19 @@ Upload a file using multipart/form-data.
 **Request:**
 - Method: `POST`
 - Content-Type: `multipart/form-data`
+- Authorization: `Basic base64(<username>:<password>)`
 - Body: Form data with a file field named "file"
 
 **Example:**
 ```bash
-curl -X POST -F "file=@README.md" http://localhost:3000/upload
+curl -X POST -F "file=@README.md" -H "Authorization: Basic $(echo -n "admin:password" | base64)" http://localhost:3000/upload
 ```
 
 **Response:**
 ```json
 {
-  "success": true,
   "filename": "example.txt",
-  "url": "/example.txt"
+  "url": "/file/YYYY-MM-DD/example.txt"
 }
 ```
 
@@ -46,6 +46,7 @@ Upload a file using base64-encoded data.
 **Request:**
 - Method: `POST`
 - Content-Type: `application/json`
+- Authorization: `Basic base64(<username>:<password>)`
 - Body:
   ```json
   {
@@ -58,6 +59,7 @@ Upload a file using base64-encoded data.
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n "admin:password" | base64)" \
   -d '{"base64":"SGVsbG8gV29ybGQ=","filename":"test.txt"}' \
   http://localhost:3000/upload/base64
 ```
@@ -65,9 +67,8 @@ curl -X POST \
 **Response:**
 ```json
 {
-  "success": true,
   "filename": "example.txt",
-  "url": "/example.txt"
+  "url": "/file/YYYY-MM-DD/example.txt"
 }
 ```
 
