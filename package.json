@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "build:image": "docker build --no-cache -t simple-static-server .",
     "start": "node dist/index.js"
   },
   "dependencies": {
