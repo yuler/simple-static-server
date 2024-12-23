@@ -13,14 +13,13 @@ export function startCronJobs() {
   new CronJob(
     CRON_TIME,
     async () => {
-      console.log('Job: create date format folder started')
+      console.log('Job [create folder]: started')
       const folderName = path.join(staticDir, getTomorrowFormat())
       await ensureDirExists(folderName)
-      console.log(`Job: create date format folder: ${folderName}`)
+      console.log(`Job [create folder]: ${folderName}`)
+      console.log('Job [create folder]: completed')
     },
-    () => {
-      console.log('Job: create date format folder completed')
-    },
+    () => {},
     true,
     TIMEZONE,
     context,
@@ -31,7 +30,7 @@ export function startCronJobs() {
   new CronJob(
     CRON_TIME,
     async () => {
-      console.log('Job: delete old folders started')
+      console.log('Job [delete folder]: started')
       // Get all
       const folders = fs.readdirSync(staticDir)
       for (const folder of folders) {
@@ -42,14 +41,13 @@ export function startCronJobs() {
         }
         // Check if the folder is passed one month
         if (isDateFolderPassedOneMonth(folder)) {
-          console.log(`Job: delete old folder: ${folder}`)
+          console.log(`Job [delete folder]: ${folder}`)
           fs.rmSync(folderPath, { recursive: true })
         }
       }
+      console.log('Job [delete folder]: completed')
     },
-    () => {
-      console.log('Job: delete old folders completed')
-    },
+    () => {},
     true,
     TIMEZONE,
     context,
